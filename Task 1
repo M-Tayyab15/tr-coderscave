@@ -1,0 +1,52 @@
+class ExpenseManager:
+    def __init__(self):
+        self.balance = {}
+
+    def add_expense(self, payer, amount, *contributors):
+        total_contributors = len(contributors) + 1
+        split_amount = amount / total_contributors
+        self.balance[payer] = self.balance.get(payer, 0) + amount
+        for contributor in contributors:
+            self.balance[contributor] = self.balance.get(contributor, 0) - split_amount
+
+    def get_balance(self):
+        for person, amount in self.balance.items():
+            print(f"{person}: ${amount:.2f}")
+
+    def settle_balance(self, person1, person2):
+        if person1 in self.balance and person2 in self.balance:
+            if self.balance[person1] > self.balance[person2]:
+                print(f"{person2} owes {person1}: ${self.balance[person2] - self.balance[person1]:.2f}")
+            elif self.balance[person1] < self.balance[person2]:
+                print(f"{person1} owes {person2}: ${self.balance[person1] - self.balance[person2]:.2f}")
+            else:
+                print("No debts between these two.")
+        else:
+            print("Person not found in records.")
+
+# Instantiate ExpenseManager
+expenses = ExpenseManager()
+
+# Taking user input for expenses
+while True:
+    print("\nEnter expense details or 'done' to finish:")
+    payer = input("Enter payer's name: ")
+    if payer.lower() == 'done':
+        break
+    amount = float(input("Enter the total amount: "))
+    contributors = input("Enter the names of contributors separated by space (if any, else press enter): ").split()
+    expenses.add_expense(payer, amount, *contributors)
+
+# Getting balances
+print("\nCurrent balances:")
+expenses.get_balance()
+
+# Settling balances
+while True:
+    print("\nEnter two names to settle debts or 'done' to finish:")
+    person1 = input("Enter first person's name: ")
+    if person1.lower() == 'done':
+        break
+    person2 = input("Enter second person's name: ")
+    expenses.settle_balance(person1, person2)
+
